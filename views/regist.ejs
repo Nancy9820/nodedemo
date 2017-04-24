@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="./favicon.ico">
+    <title>注册</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="../css/signin.css" rel="stylesheet">
+</head>
+
+<body>
+<!--设置通用头部-->
+<% include header.ejs %>
+<div class="container">
+
+    <form class="form-signin">
+        <h2 class="form-signin-heading">Please sign up</h2>
+        <label for="inputEmail" class="sr-only">UserName</label>
+        <input type="email" class="form-control" placeholder="UserName" required autofocus id="username">
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" class="form-control" placeholder="Password" required id="password">
+        <!--<div class="checkbox">-->
+            <!--<label>-->
+                <!--<input type="checkbox" value="remember-me"> Remember me-->
+            <!--</label>-->
+        <!--</div>-->
+        <button class="btn btn-lg btn-primary btn-block" type="button" id="signUp">Sign up</button>
+        <div class="signUpRes" style="margin-top: 10px">
+            <div class="alert alert-danger" role="alert" id="zhuceshibai" style="display: none;">注册失败</div>
+            <div class="alert alert-success" role="alert" id="zhucechenggong" style="display: none;">注册成功</div>
+        </div>
+
+    </form>
+
+</div> <!-- /container -->
+<script src="/js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript">
+    $(function(){
+        $("#signUp").click(function () {
+            // 给注册按钮注册点击事件
+            $.post("/doregist",{
+                "username":$("#username").val(),
+                "password" : $("#password").val()
+            },function (result) {
+                //-2:系统错误；-1：该用户已注册；0：注册成功
+                if(result == "0"){
+                    //注册成功
+
+                    $("#zhuceshibai").hide();
+                    var tiaozhuanshijian = 5;
+                    var mytime=setInterval(function () {
+                        $("#zhucechenggong").fadeIn();
+                        $("#zhucechenggong").html("注册成功！"+tiaozhuanshijian+"秒后系统将自动跳转到首页");
+                        if(tiaozhuanshijian==0){
+                            window.location = "/";
+                            //清除定时器
+                            window.clearTimeout(mytime);
+                        }
+                        tiaozhuanshijian--;
+                    },1000);
+
+                }else if(result == "-1"){
+                    //用户名被占用
+                    $("#zhucechenggong").hide();
+//                $("#zhuceshibai").show();
+                    $("#zhuceshibai").fadeIn();
+                    $("#zhuceshibai").html("该用户名已被注册");
+                }else if(result == "-2"){
+                    //服务器错误
+                    $("#zhucechenggong").hide();
+//                $("#zhuceshibai").show();
+                    $("#zhuceshibai").fadeIn();
+                    $("#zhuceshibai").html("服务器错误,请联系系统管理员！");
+                }
+            })
+        })
+    })
+
+</script>
+</body>
+</html>
